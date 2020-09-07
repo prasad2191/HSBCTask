@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./papaparse.min.js"></script>
+    <script>
+      var employeeswithdepta00 = [];
+      var months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      function myFunction() {
+        var x = document.getElementById("csv-file");
+        var txt = "";
+        if ("files" in x) {
+          if (x.files.length == 0) {
+            txt = "Select one or more files.";
+          } else {
+            Papa.parse(x.files[0], {
+              header: true,
+              dynamicTyping: true,
+              complete: function (results) {
+                // console.log(results.data[0].DEPT);
+                // console.log(results.data.filter(d => d.DEPT === "A00"))
+                var data = results.data
+                  .filter((d) => d.DEPT === "A00")
+                  .map(function (emp) {
+                    const empdata = {};
+                    empdata["FirstName"] = emp.FIRST_NAME;
+                    empdata["LastName"] = emp.LAST_NAME;
+                    empdata["MidInit"] = emp.MID_INIT;
+                    var mainContainer = document.getElementById(
+                      "empwithdepta00"
+                    );
+                    var div = document.createElement("div");
+                    div.innerHTML =
+                      "A00" +
+                      ", " +
+                      empdata.LastName +
+                      ", " +
+                      empdata.FirstName +
+                      ", " +
+                      empdata.MidInit;
+                    mainContainer.appendChild(div);
+                    return empdata;
+                  });
+                // console.log(data[0]);
+                console.log("Employees in Department A00");
+                data.forEach((element) => {
+                  console.log(
+                    element["FirstName"],
+                    element["LastName"],
+                    element["MidInit"]
+                  );
+                });
+
+                //HIRE DATE
+                var hireDates = results.data.sort(function (a, b) {
+                  let hda = a.HIRE_DATE;
+                  let hdb = b.HIRE_DATE;
+
+                  if (hda < hdb) {
+                    return 1;
+                  }
+                  if (hda > hdb) {
+                    return -1;
+                  }
+                  return 0;
+                });
+                var newhiredates = hireDates.map((item) => {
+                  const newhiredate = {};
+                  var ISTDate = new Date(item.HIRE_DATE);
+                  var fullYear = ISTDate.getFullYear();
+                  var month = months[ISTDate.getMonth()];
+                  var date = ISTDate.getDate();
+
+                  newhiredate["FirstName"] = item.FIRST_NAME;
+                  newhiredate["hire_date"] =
+                    date + " " + month + " " + fullYear;
+                  var mainContainer = document.getElementById("hiredate");
+                  var div = document.createElement("div");
+                  div.innerHTML =
+                    newhiredate.FirstName + ", " + newhiredate.hire_date;
+                  mainContainer.appendChild(div);
+                  return newhiredate;
+                });
+                // console.log(newhiredates);
+                console.log("Employees by Hire Date(Newest to Oldest");
+                newhiredates.forEach((element) => {
+                  
+                  console.log(element["FirstName"], element["hire_date"]);
+                });
+              },
+            });
+          }
+        } else {
+          if (x.value == "") {
+            txt += "Select one or more files.";
+          } else {
+            txt += "The files property is not supported by your browser!";
+            txt += "The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead.
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <input type="file" id="csv-file" name="csv-file" onchange="myFunction()" />
+    <!-- <button onClick="generateJSON()">GenerateJSON</button> -->
+    <h3>Employees in Department A00</h3>
+    <p id="empwithdepta00"></p>
+    <h3>Employees by Hire Date(Newest to Oldest</h3>
+    <p id="hiredate"></p>
+  </body>
+</html>
