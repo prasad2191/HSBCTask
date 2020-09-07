@@ -1,3 +1,7 @@
+<!-- Author: Prasad Pande
+Date and Time: 07 Sep 2020:10:00:00
+Employee ID: 9007758 -->
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -22,18 +26,19 @@
         "Dec",
       ];
       function myFunction() {
+        //Get and Read CSV File
         var x = document.getElementById("csv-file");
-        var txt = "";
+        var csv = "";
         if ("files" in x) {
           if (x.files.length == 0) {
-            txt = "Select one or more files.";
+            csv = "Select CSV file.";
           } else {
+            //PAPAParse to parse CSV to JSON
             Papa.parse(x.files[0], {
               header: true,
               dynamicTyping: true,
               complete: function (results) {
-                // console.log(results.data[0].DEPT);
-                // console.log(results.data.filter(d => d.DEPT === "A00"))
+                //Display All Employees with department Name - A00
                 var data = results.data
                   .filter((d) => d.DEPT === "A00")
                   .map(function (emp) {
@@ -41,6 +46,7 @@
                     empdata["FirstName"] = emp.FIRST_NAME;
                     empdata["LastName"] = emp.LAST_NAME;
                     empdata["MidInit"] = emp.MID_INIT;
+                    //Display in HTML Page
                     var mainContainer = document.getElementById(
                       "empwithdepta00"
                     );
@@ -56,7 +62,8 @@
                     mainContainer.appendChild(div);
                     return empdata;
                   });
-                // console.log(data[0]);
+
+                // Display in console.log()
                 console.log("Employees in Department A00");
                 data.forEach((element) => {
                   console.log(
@@ -66,11 +73,10 @@
                   );
                 });
 
-                //HIRE DATE
+                //HIRE DATE in required format with sorting to newest to oldest
                 var hireDates = results.data.sort(function (a, b) {
                   let hda = a.HIRE_DATE;
                   let hdb = b.HIRE_DATE;
-
                   if (hda < hdb) {
                     return 1;
                   }
@@ -81,14 +87,15 @@
                 });
                 var newhiredates = hireDates.map((item) => {
                   const newhiredate = {};
+                  //Date Formating to given format
                   var ISTDate = new Date(item.HIRE_DATE);
                   var fullYear = ISTDate.getFullYear();
                   var month = months[ISTDate.getMonth()];
                   var date = ISTDate.getDate();
-
                   newhiredate["FirstName"] = item.FIRST_NAME;
                   newhiredate["hire_date"] =
                     date + " " + month + " " + fullYear;
+                  //Display in HTML Page
                   var mainContainer = document.getElementById("hiredate");
                   var div = document.createElement("div");
                   div.innerHTML =
@@ -96,21 +103,49 @@
                   mainContainer.appendChild(div);
                   return newhiredate;
                 });
-                // console.log(newhiredates);
+                //Display in console.log()
                 console.log("Employees by Hire Date(Newest to Oldest");
                 newhiredates.forEach((element) => {
-                  
                   console.log(element["FirstName"], element["hire_date"]);
+                });
+
+                //EMP level per department
+                var flags = {};
+                var departments = [];
+                var emp_level_data = [];
+                var distictDepts = results.data
+                  .filter(function (entry) {
+                    if (flags[entry.DEPT]) {
+                      return false;
+                    }
+                    flags[entry.DEPT] = true;
+                    return true;
+                  })
+                  .map(function (department) {
+                    departments.push(department.DEPT);
+                  });
+
+                var emp_level = departments.map(function (department) {
+                  const emplevelObj = {};
+                  emplevelObj["dept"] = department;
+                  emplevelObj["emplevel"] = results.data.filter(
+                    (d) => d.DEPT === department
+                  );
+                  console.log("Employee Level/s By Department", emplevelObj["dept"]);
+                  emplevelObj["emplevel"].forEach((emplevelelement) => {
+                      console.log(emplevelelement["EMP_LEVEL"]);
+                    })
+                  //Display in HTML Page
+                  //Pending
                 });
               },
             });
           }
         } else {
           if (x.value == "") {
-            txt += "Select one or more files.";
+            csv += "Select CSV file..!";
           } else {
-            txt += "The files property is not supported by your browser!";
-            txt += "The path of the selected file: " + x.value; // If the browser does not support the files property, it will return the path of the selected file instead.
+            csv += "The files property is not supported by your browser!";
           }
         }
       }
@@ -118,10 +153,9 @@
   </head>
   <body>
     <input type="file" id="csv-file" name="csv-file" onchange="myFunction()" />
-    <!-- <button onClick="generateJSON()">GenerateJSON</button> -->
-    <h3>Employees in Department A00</h3>
+    <h3 id="empwithdepta00label">Employees in Department A00</h3>
     <p id="empwithdepta00"></p>
-    <h3>Employees by Hire Date(Newest to Oldest</h3>
+    <h3 id="hiredatelabel">Employees by Hire Date(Newest to Oldest</h3>
     <p id="hiredate"></p>
   </body>
 </html>
