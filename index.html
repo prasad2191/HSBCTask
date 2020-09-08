@@ -10,7 +10,7 @@ Employee ID: 9007758 -->
     <title>Document</title>
     <script src="./papaparse.min.js"></script>
     <script>
-      var employeeswithdepta00 = [];
+      var employeesWithDeptA00 = [];
       var months = [
         "Jan",
         "Feb",
@@ -85,34 +85,34 @@ Employee ID: 9007758 -->
                   }
                   return 0;
                 });
-                var newhiredates = hireDates.map((item) => {
-                  const newhiredate = {};
+                var newHireDates = hireDates.map((item) => {
+                  const newHireDate = {};
                   //Date Formating to given format
                   var ISTDate = new Date(item.HIRE_DATE);
                   var fullYear = ISTDate.getFullYear();
                   var month = months[ISTDate.getMonth()];
                   var date = ISTDate.getDate();
-                  newhiredate["FirstName"] = item.FIRST_NAME;
-                  newhiredate["hire_date"] =
+                  newHireDate["FirstName"] = item.FIRST_NAME;
+                  newHireDate["hire_date"] =
                     date + " " + month + " " + fullYear;
                   //Display in HTML Page
                   var mainContainer = document.getElementById("hiredate");
                   var div = document.createElement("div");
                   div.innerHTML =
-                    newhiredate.FirstName + ", " + newhiredate.hire_date;
+                    newHireDate.FirstName + ", " + newHireDate.hire_date;
                   mainContainer.appendChild(div);
-                  return newhiredate;
+                  return newHireDate;
                 });
                 //Display in console.log()
                 console.log("Employees by Hire Date(Newest to Oldest)");
-                newhiredates.forEach((element) => {
+                newHireDates.forEach((element) => {
                   console.log(element["FirstName"], element["hire_date"]);
                 });
 
                 //EMP level per department
                 var flags = {};
                 var departments = [];
-                var emp_level_data = [];
+                var empLevelData = [];
                 var distictDepts = results.data
                   .filter(function (entry) {
                     if (flags[entry.DEPT]) {
@@ -126,14 +126,14 @@ Employee ID: 9007758 -->
                   });
 
                 var emp_level = departments.map(function (department) {
-                  const emplevelObj = {};
-                  emplevelObj["dept"] = department;
-                  emplevelObj["emplevel"] = results.data.filter(
+                  const empLevelObj = {};
+                  empLevelObj["dept"] = department;
+                  empLevelObj["emplevel"] = results.data.filter(
                     (d) => d.DEPT === department
                   );
-                  console.log("Employee Level/s By Department", emplevelObj["dept"]);
-                  emplevelObj["emplevel"].forEach((emplevelelement) => {
-                      console.log(emplevelelement["EMP_LEVEL"]);
+                  console.log("Employee Level/s By Department", empLevelObj["dept"]);
+                  empLevelObj["emplevel"].forEach((empLevelElement) => {
+                      console.log(empLevelElement["EMP_LEVEL"]);
                     })
                   //Display in HTML Page
                   //Pending
